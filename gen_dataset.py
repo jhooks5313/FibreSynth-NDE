@@ -50,6 +50,7 @@ def main():
         writer = csv.writer(csvfile)
         writer.writerow([
             "filename",
+            "label",
             "defect_type",
             "seed",
             "fiber_angle_deg"
@@ -107,4 +108,5 @@ def main():
     
 if __name__ == "__main__":
     main()
+
 
