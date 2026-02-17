@@ -1,0 +1,7 @@
+numpy==1.26.4
+scipy==1.11.4
+matplotlib==3.8.2
+scikit-image==0.22.0
+imageio==2.33.1
+opencv-python==4.9.0.80
+porespy==2.3.0
