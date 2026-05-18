@@ -127,7 +127,7 @@ def make_crack(n_cracks=None, angle=None, rng=None):
         x2 = int(x + length * np.cos(angle))
         y2 = int(y + length * np.sin(angle))
         crack_mask = cv2.line(mask, (x, y), (x2, y2), 255, thickness=2)
-    return crack_mask.astype(np.float32)
+    return (crack_mask / 255.0).astype(np.float32)
     
 
 '''

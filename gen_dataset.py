@@ -13,8 +13,8 @@ import csv
 from apply_defect import apply_porosity, apply_delam, apply_crack
 from defect_const import DEFAULT_RNG_SEED
 
-OUT_DIR = Path("E:\\synth_data")
-N_PER_DEFECT = 750
+OUT_DIR = Path("E:\\synth_data\\synth_data")
+N_PER_DEFECT = 10
 IMG_EXT = ".png"
 DEFECTS = {
     "porosity": apply_porosity,
