@@ -6,7 +6,7 @@ Created on Thu Jan 29 11:23:38 2026
 """
 
 import numpy as np
-import uuid, inspect, random, cv2
+import uuid, inspect, random, cv2, re, glob
 from scipy.stats import gamma
 from scipy.ndimage import rotate
 from skimage.draw import polygon
@@ -19,9 +19,43 @@ except Exception:
     print('Porespy is not installed. Please install using conda-forge in your venv.')
     exit(1)
 
+def _load_background_image(rng):
+    """Pick a random image from BACKGROUND_IMAGE_DIR, resize to (IMG_H, IMG_W),
+    normalise to [0, 1] float32, and parse the fibre angle from the filename.
+    Filename angle tokens: _ang0_, _ang90_, _ang45_, _ang-45_  (degrees).
+    Returns (texture, ang_deg)."""
+    exts = ("*.png", "*.jpg", "*.jpeg", "*.tif", "*.tiff", "*.bmp")
+    paths = []
+    for ext in exts:
+        paths.extend(glob.glob(str(BACKGROUND_IMAGE_DIR) + "/" + ext))
+    if not paths:
+        raise FileNotFoundError(
+            f"No images found in BACKGROUND_IMAGE_DIR: {BACKGROUND_IMAGE_DIR}"
+        )
+    idx = int(rng.integers(0, len(paths)))
+    img_path = paths[idx]
+    img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+    if img is None:
+        raise IOError(f"cv2 could not read image: {img_path}")
+    if img.shape != (IMG_H, IMG_W):
+        img = cv2.resize(img, (IMG_W, IMG_H), interpolation=cv2.INTER_LINEAR)
+    texture = img.astype(np.float32) / 255.0
+    texture = np.clip(texture, 0.0, 1.0)
+    # parse angle from filename, e.g. _ang90_ or _ang-45_
+    m = re.search(r"_ang(-?\d+)_", img_path)
+    if m:
+        ang_deg = int(m.group(1))
+        if ang_deg not in ALLOWED_ANGLES_DEG:
+            ang_deg = 0
+    else:
+        ang_deg = random.choice(ALLOWED_ANGLES_DEG)
+    return texture, ang_deg
+
 def generate_clean(shape=(IMG_H, IMG_W), rng=None):
     if rng is None:
         rng = np.random.default_rng(DEFAULT_RNG_SEED)
+    if USE_BACKGROUND_IMAGES:
+        return _load_background_image(rng)
     theta_map, ang_deg = fibre_map(shape, rng=rng)
     texture = fibre_texture(shape, theta_map, rng=rng)
     texture = np.clip(texture, 0.0, 1.0).astype(np.float32)

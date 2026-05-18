@@ -9,6 +9,11 @@ import numpy as np
 #image/grid defaults
 IMG_H = 512
 IMG_W = 512
+
+#background image settings
+USE_BACKGROUND_IMAGES = True       # set True to use real images instead of procedural textures
+BACKGROUND_IMAGE_DIR  = r"C:\path\to\background_images"  # folder containing grayscale fibre images
+# Angle is parsed from filenames containing '_ang0_', '_ang90_', '_ang45_', '_ang-45_'.
 DX = 1.0  # mm/pixel
 ALLOWED_ANGLES_DEG = [0, 90, 45, -45]
 DEFAULT_RNG_SEED = 60
